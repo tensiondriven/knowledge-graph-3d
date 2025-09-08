@@ -1,6 +1,13 @@
 // 3D Knowledge Graph Visualizer with Schema.org
 class NestedSphereVisualizer {
     constructor() {
+        // Check if Three.js is available
+        if (typeof THREE === "undefined") {
+            console.error("THREE.js is not loaded");
+            document.getElementById("loading").innerHTML = "❌ THREE.js not loaded";
+            return;
+        }
+
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -15,46 +22,52 @@ class NestedSphereVisualizer {
     }
 
     init() {
-        // Setup renderer
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setClearColor(0x000011);
-        document.body.appendChild(this.renderer.domElement);
+        try {
+            // Setup renderer
+            this.renderer.setSize(window.innerWidth, window.innerHeight);
+            this.renderer.setClearColor(0x000011);
+            document.body.appendChild(this.renderer.domElement);
 
-        // Setup camera
-        this.camera.position.set(0, 0, 50);
+            // Setup camera
+            this.camera.position.set(0, 0, 50);
 
-        // Create nested spheres (skybox shells)
-        this.createNestedSpheres();
+            // Create nested spheres (skybox shells)
+            this.createNestedSpheres();
 
-        // Add Schema.org data layer
-        this.createSchemaNodes();
-        this.createSchemaConnections();
+            // Add Schema.org data layer
+            this.createSchemaNodes();
+            this.createSchemaConnections();
 
-        // Add lighting
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
-        this.scene.add(ambientLight);
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        directionalLight.position.set(10, 10, 5);
-        this.scene.add(directionalLight);
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
+            this.scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(10, 10, 5);
+            this.scene.add(directionalLight);
 
-        // Start animation loop
-        this.animate();
+            // Start animation loop
+            this.animate();
 
-        // Update info
-        this.updateStats();
+            // Update info
+            this.updateStats();
 
-        // Handle window resize
-        window.addEventListener("resize", () => this.onWindowResize());
+            // Handle window resize
+            window.addEventListener("resize", () => this.onWindowResize());
+
+        } catch (error) {
+            console.error("Initialization error:", error);
+            document.getElementById("stats").innerHTML = `❌ Error: ${error.message}`;
+        }
     }
 
     createNestedSpheres() {
         const sphereConfigs = [
-            { radius: 45, segments: 32, color: 0x1a1a2e, opacity: 0.08, speed: 0.001 },  // Outermost
+            { radius: 45, segments: 32, color: 0x1a1a2e, opacity: 0.08, speed: 0.001 },
             { radius: 35, segments: 24, color: 0x16213e, opacity: 0.12, speed: 0.002 },
             { radius: 25, segments: 20, color: 0x0f3460, opacity: 0.15, speed: 0.004 },
             { radius: 18, segments: 16, color: 0x0e4b99, opacity: 0.18, speed: 0.008 },
-            { radius: 12, segments: 12, color: 0x2e86ab, opacity: 0.22, speed: 0.015 },   // Innermost
+            { radius: 12, segments: 12, color: 0x2e86ab, opacity: 0.22, speed: 0.015 },
         ];
 
         sphereConfigs.forEach((config, index) => {
@@ -83,12 +96,11 @@ class NestedSphereVisualizer {
 
     createSchemaNodes() {
         if (!window.SCHEMA_CORE_TYPES) {
-            console.warn("Schema data not loaded yet");
+            console.warn("Schema data not loaded yet, using fallback");
             return;
         }
 
         SCHEMA_CORE_TYPES.forEach(nodeData => {
-            // Create billboard geometry
             const geometry = new THREE.PlaneGeometry(nodeData.size * 2, nodeData.size * 2);
             const material = new THREE.MeshBasicMaterial({ 
                 color: nodeData.color,
@@ -164,10 +176,11 @@ class NestedSphereVisualizer {
         const stats = document.getElementById("stats");
         if (stats) {
             stats.innerHTML = `
+                <div class="status">✓ Visualization Active</div>
                 Spheres: ${this.spheres.length}<br>
                 Schema Nodes: ${this.schemaNodes.length}<br>
                 Connections: ${this.connections.length}<br>
-                Status: ✓ Schema.org layer active<br>
+                Status: Schema.org layer loaded<br>
                 Next: CUDA physics backend
             `;
         }
@@ -180,7 +193,11 @@ class NestedSphereVisualizer {
     }
 }
 
-// Initialize when page loads
-window.addEventListener("DOMContentLoaded", () => {
-    new NestedSphereVisualizer();
-});
+// Initialize when DOM and scripts are ready
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => new NestedSphereVisualizer(), 100);
+    });
+} else {
+    setTimeout(() => new NestedSphereVisualizer(), 100);
+}

@@ -5,29 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Knowledge Graph Visualizer</title>
     <style>
-        body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+        body { margin: 0; padding: 0; background: #000; overflow: hidden; font-family: monospace; }
         canvas { display: block; }
         #info { 
             position: absolute; top: 10px; left: 10px; color: white; 
-            font-family: monospace; z-index: 100; background: rgba(0,0,0,0.7);
-            padding: 10px; border-radius: 5px;
+            z-index: 100; background: rgba(0,0,0,0.8);
+            padding: 15px; border-radius: 8px; min-width: 250px;
         }
         #info h3 { margin: 0 0 10px 0; color: #3498db; }
+        #loading { color: #f39c12; }
+        .status { color: #2ecc71; }
+        .error { color: #e74c3c; }
     </style>
 </head>
 <body>
     <div id="info">
         <h3>🌌 3D Knowledge Graph</h3>
-        <div id="stats">Loading visualization...</div>
+        <div id="stats">
+            <div id="loading">Loading Three.js...</div>
+        </div>
     </div>
-    
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+
+    <!-- Three.js from reliable CDN -->
+    <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
     
     <!-- Schema.org data -->
     <script src="schema-data.js"></script>
     
     <!-- Main application -->
-    <script src="app.js"></script>
+    <script>
+        // Wait for Three.js to load
+        window.addEventListener("load", function() {
+            if (typeof THREE !== "undefined") {
+                document.getElementById("loading").innerHTML = "Three.js loaded ✓<br>Initializing visualization...";
+                // Load main app
+                const script = document.createElement("script");
+                script.src = "app.js";
+                document.head.appendChild(script);
+            } else {
+                document.getElementById("loading").innerHTML = "Three.js failed to load";
+                document.getElementById("loading").className = "error";
+            }
+        });
+    </script>
 </body>
 </html>

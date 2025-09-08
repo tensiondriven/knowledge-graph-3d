@@ -1,36 +1,12 @@
 services:
-  viz-dev:
-    image: elixir:1.15-alpine
-    container_name: viz-dev-persistent
-    working_dir: /app
-    volumes:
-      - /home/j:/host-home:rw
-      - viz-data:/app/data
-      - ./phoenix_app:/app:rw
+  viz-server:
+    image: nginx:alpine
+    container_name: viz-server-nginx
     ports:
-      - "4000:4000"
-      - "4001:4001"
-    environment:
-      - MIX_ENV=dev
-      - PHX_SERVER=true
-    command: |
-      sh -c "
-        apk add --no-cache git build-base nodejs npm inotify-tools &&
-        mix local.hex --force &&
-        mix local.rebar --force &&
-        mix archive.install hex phx_new --force &&
-        if [ ! -f mix.exs ]; then
-          mix phx.new /tmp/viz_server --live --no-ecto --no-gettext --no-mailer &&
-          cp -r /tmp/viz_server/* /app/ &&
-          cp -r /tmp/viz_server/.* /app/ 2>/dev/null || true
-        fi &&
-        mix deps.get &&
-        mix phx.server
-      "
-    stdin_open: true
-    tty: true
+      - "0.0.0.0:8080:80"
+    volumes:
+      - .:/usr/share/nginx/html:ro
     restart: unless-stopped
-
-volumes:
-  viz-data:
-    driver: local
+    environment:
+      - NGINX_HOST=0.0.0.0
+      - NGINX_PORT=80
