@@ -16,6 +16,8 @@ class NestedSphereVisualizer {
         window.visualizer = this;
         
         this.init();
+        // Wrap initialization in try-catch
+        try {
     }
 
     init() {
@@ -48,6 +50,11 @@ class NestedSphereVisualizer {
 
             // Update info
             this.updateStats();
+        } catch (error) {
+            console.error("Visualization initialization failed:", error);
+            window.errorDisplay.logError("VIZ INIT", error.message + " (" + error.stack + ")", "app.js", 0);
+            document.getElementById("stats").innerHTML = `<span class="error">❌ Viz Error: ${error.message}</span>`;
+        }
 
             // Handle window resize
             window.addEventListener("resize", () => this.onWindowResize());

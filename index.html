@@ -15,7 +15,17 @@
         #info h3 { margin: 0 0 10px 0; color: #3498db; }
         #loading { color: #f39c12; }
         .status { color: #2ecc71; }
-        .error { color: #e74c3c; }
+        .error { color: #e74c3c; font-weight: bold; }
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: #999;
+            font-size: 10px;
+            background: rgba(0,0,0,0.6);
+            padding: 8px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -26,34 +36,62 @@
         </div>
     </div>
 
+    <div id="controls">
+        Ctrl+C: Clear errors | F12: Developer Console
+    </div>
+
+    <!-- Error handling first -->
+    <script src="error-handler.js"></script>
+
     <script>
-        // Load Three.js and wait for it
+        // Enhanced script loader with error handling
         function loadScript(src) {
             return new Promise((resolve, reject) => {
                 const script = document.createElement("script");
                 script.src = src;
-                script.onload = resolve;
-                script.onerror = reject;
+                script.onload = () => {
+                    console.log(`✓ Loaded: ${src}`);
+                    resolve();
+                };
+                script.onerror = (error) => {
+                    const errorMsg = `Failed to load script: ${src}`;
+                    console.error(errorMsg, error);
+                    window.errorDisplay.logError("SCRIPT LOAD", errorMsg, src, 0);
+                    reject(new Error(errorMsg));
+                };
                 document.head.appendChild(script);
             });
         }
 
-        // Load scripts in sequence
+        // Load scripts in sequence with comprehensive error handling
         async function initVisualization() {
             try {
                 document.getElementById("loading").innerHTML = "Loading Three.js...";
                 await loadScript("https://unpkg.com/three@0.152.2/build/three.min.js");
                 
+                // Verify THREE loaded
+                if (typeof THREE === "undefined") {
+                    throw new Error("THREE.js loaded but THREE object not available");
+                }
+                
                 document.getElementById("loading").innerHTML = "Three.js loaded ✓<br>Loading schema data...";
                 await loadScript("schema-data.js");
+                
+                // Verify schema data loaded
+                if (typeof SCHEMA_CORE_TYPES === "undefined") {
+                    console.warn("Schema data not loaded, visualization will use fallback");
+                }
                 
                 document.getElementById("loading").innerHTML = "Schema data loaded ✓<br>Starting visualization...";
                 await loadScript("app.js");
                 
+                document.getElementById("loading").innerHTML = "<span class=\"status\">✓ All systems ready</span>";
+                
             } catch (error) {
-                console.error("Loading error:", error);
-                document.getElementById("loading").innerHTML = "❌ Failed to load: " + error.message;
-                document.getElementById("loading").className = "error";
+                const errorMsg = `Initialization failed: ${error.message}`;
+                console.error(errorMsg, error);
+                document.getElementById("loading").innerHTML = `<span class="error">❌ ${errorMsg}</span>`;
+                window.errorDisplay.logError("INIT ERROR", errorMsg, "index.html", 0);
             }
         }
 
