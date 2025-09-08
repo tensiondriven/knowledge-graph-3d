@@ -14,8 +14,6 @@ class NestedSphereVisualizer {
         window.visualizer = this;
         
         this.init();
-        // Wrap initialization in try-catch
-        try {
     }
 
     init() {
