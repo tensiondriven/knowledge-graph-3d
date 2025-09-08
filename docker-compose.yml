@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  viz-dev:
+    image: elixir:1.15-alpine
+    container_name: viz-dev-persistent
+    working_dir: /app
+    volumes:
+      - /home/j:/host-home:rw
+      - viz-data:/app/data
+      - .:/app/project:rw
+    ports:
+      - "4000:4000"
+      - "4001:4001"  # LiveView websockets
+    environment:
+      - MIX_ENV=dev
+      - PHX_SERVER=true
+    command: |
+      sh -c "
+        apk add --no-cache git build-base nodejs npm inotify-tools &&
+        mix local.hex --force &&
+        mix local.rebar --force &&
+        if [ ! -f mix.exs ]; then
+          mix phx.new . --app viz_server --live --no-ecto --no-gettext --no-mailer
+        fi &&
+        mix deps.get &&
+        mix phx.server
+      "
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+
+volumes:
+  viz-data:
+    driver: local
