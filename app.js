@@ -2,10 +2,7 @@
 class NestedSphereVisualizer {
     constructor() {
         // Check if Three.js is available
-        if (typeof THREE === "undefined") {
-            console.error("THREE.js is not loaded");
-            document.getElementById("loading").innerHTML = "❌ THREE.js not loaded";
-            return;
+        // THREE.js is guaranteed to be loaded at this point
         }
 
         this.scene = new THREE.Scene();
@@ -97,7 +94,6 @@ class NestedSphereVisualizer {
     createSchemaNodes() {
         if (!window.SCHEMA_CORE_TYPES) {
             console.warn("Schema data not loaded yet, using fallback");
-            return;
         }
 
         SCHEMA_CORE_TYPES.forEach(nodeData => {
@@ -125,7 +121,6 @@ class NestedSphereVisualizer {
     createSchemaConnections() {
         if (!window.SCHEMA_RELATIONSHIPS) {
             console.warn("Schema relationships not loaded yet");
-            return;
         }
 
         SCHEMA_RELATIONSHIPS.forEach(rel => {

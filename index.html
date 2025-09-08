@@ -26,27 +26,43 @@
         </div>
     </div>
 
-    <!-- Three.js from reliable CDN -->
-    <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
-    
-    <!-- Schema.org data -->
-    <script src="schema-data.js"></script>
-    
-    <!-- Main application -->
     <script>
-        // Wait for Three.js to load
-        window.addEventListener("load", function() {
-            if (typeof THREE !== "undefined") {
-                document.getElementById("loading").innerHTML = "Three.js loaded ✓<br>Initializing visualization...";
-                // Load main app
+        // Load Three.js and wait for it
+        function loadScript(src) {
+            return new Promise((resolve, reject) => {
                 const script = document.createElement("script");
-                script.src = "app.js";
+                script.src = src;
+                script.onload = resolve;
+                script.onerror = reject;
                 document.head.appendChild(script);
-            } else {
-                document.getElementById("loading").innerHTML = "Three.js failed to load";
+            });
+        }
+
+        // Load scripts in sequence
+        async function initVisualization() {
+            try {
+                document.getElementById("loading").innerHTML = "Loading Three.js...";
+                await loadScript("https://unpkg.com/three@0.152.2/build/three.min.js");
+                
+                document.getElementById("loading").innerHTML = "Three.js loaded ✓<br>Loading schema data...";
+                await loadScript("schema-data.js");
+                
+                document.getElementById("loading").innerHTML = "Schema data loaded ✓<br>Starting visualization...";
+                await loadScript("app.js");
+                
+            } catch (error) {
+                console.error("Loading error:", error);
+                document.getElementById("loading").innerHTML = "❌ Failed to load: " + error.message;
                 document.getElementById("loading").className = "error";
             }
-        });
+        }
+
+        // Start loading when DOM is ready
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initVisualization);
+        } else {
+            initVisualization();
+        }
     </script>
 </body>
 </html>
