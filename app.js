@@ -26,7 +26,7 @@ class NestedSphereVisualizer {
             document.body.appendChild(this.renderer.domElement);
 
             // Setup camera
-            this.camera.position.set(0, 0, 50);
+            this.camera.position.set(0, 0, 67); // 50 + 33% = 67
 
             // Create nested spheres (skybox shells)
             this.createNestedSpheres();
@@ -60,11 +60,11 @@ class NestedSphereVisualizer {
 
     createNestedSpheres() {
         const sphereConfigs = [
-            { radius: 45, segments: 32, color: 0x1a1a2e, opacity: 0.08, speed: 0.001 },
-            { radius: 35, segments: 24, color: 0x16213e, opacity: 0.12, speed: 0.002 },
-            { radius: 25, segments: 20, color: 0x0f3460, opacity: 0.15, speed: 0.004 },
-            { radius: 18, segments: 16, color: 0x0e4b99, opacity: 0.18, speed: 0.008 },
-            { radius: 12, segments: 12, color: 0x2e86ab, opacity: 0.22, speed: 0.015 },
+            { radius: 90, segments: 32, color: 0x1a1a2e, opacity: 0.08, speed: 0.000333 },
+            { radius: 70, segments: 24, color: 0x16213e, opacity: 0.12, speed: 0.000667 },
+            { radius: 50, segments: 20, color: 0x0f3460, opacity: 0.15, speed: 0.001333 },
+            { radius: 36, segments: 16, color: 0x0e4b99, opacity: 0.18, speed: 0.002667 },
+            { radius: 24, segments: 12, color: 0x2e86ab, opacity: 0.22, speed: 0.005 },
         ];
 
         sphereConfigs.forEach((config, index) => {
@@ -160,8 +160,8 @@ class NestedSphereVisualizer {
 
         // Slowly orbit camera
         const time = Date.now() * 0.0001;
-        this.camera.position.x = Math.cos(time) * 60;
-        this.camera.position.z = Math.sin(time) * 60;
+        this.camera.position.x = Math.cos(time) * 80;
+        this.camera.position.z = Math.sin(time) * 80;
         this.camera.lookAt(0, 0, 0);
 
         this.renderer.render(this.scene, this.camera);
