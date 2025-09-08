@@ -1,0 +1,20 @@
+{
+  "name": "viz-server",
+  "version": "1.0.0",
+  "description": "Multi-user 3D visualization of schema.org and knowledge graphs with physics-based interactions.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tensiondriven/knowledge-graph-3d.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tensiondriven/knowledge-graph-3d/issues"
+  },
+  "homepage": "https://github.com/tensiondriven/knowledge-graph-3d#readme"
+}
