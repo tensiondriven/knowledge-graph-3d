@@ -2,8 +2,6 @@
 class NestedSphereVisualizer {
     constructor() {
         // Check if Three.js is available
-        // THREE.js is guaranteed to be loaded at this point
-        }
 
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
